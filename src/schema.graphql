@@ -1,0 +1,225 @@
+enum CategoryKey {
+  PHONES
+  ELECTRONICS
+  LAPTOPS
+  GROCERIES
+  FRESH_FOOD
+  FROZEN_FOOD
+  APPLIANCES
+  FURNITURE
+  HOUSEHOLD
+  OUTDOOR
+  BABY_WORLD
+  TOYS
+  BEAUTY
+  WATCHES
+}
+
+enum VariantType {
+  COLOR
+  SIZE
+}
+
+scalar DateTime
+
+type Query {
+  categories: [Category!]!
+  product(productID: String): Product!
+  products(filter: String, productID: String, categoryID: String): [Product!]!
+  banners(marketing: String, skip: Int, first: Int): [Banner!]!
+  topPicks(skip: Int, first: Int): [TopPick!]!
+  popularCategories: [PopularCategory!]!
+  bannersTopPick(marketing: String): BannersTopPick
+  variants(type: VariantType): [Variant!]!
+  cart(cartCookie: String): [Cart]!
+}
+
+type Mutation {
+  signup(email: String!, password: String!, name: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+  reviewProduct(
+    title: String
+    description: String!
+    productID: String!
+    starID: String
+    starKey: String
+    starValue: Int
+  ): ProductReview
+  voteReview(id: String, positive: Int!, negative: Int!, reviewID: String!): Vote
+  # updateCart(id: String, productID: String, qty: Int!): Cart!
+  updateCart(userID: String, productID: String!, qty: Int!): Cart
+}
+
+type BannersTopPick {
+  banners: [Banner!]!
+  topPicks: [TopPick!]!
+  popularCategories: [PopularCategory!]!
+}
+
+type ProductReview {
+  review: Review
+  stars: Stars
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  reviews: [Review]!
+}
+
+type Category {
+  id: ID!
+  categoryKey: CategoryKey
+  name: String!
+  subCategories: [String]!
+  products: [Product]!
+}
+
+type PopularCategory {
+  id: ID!
+  category: Category
+  image: String
+}
+
+type ProductImage {
+  product: Product!
+  small: String
+  medium: String
+  large: [String]!
+}
+
+type Variant {
+  id: ID!
+  name: String!
+  value: String!
+  type: VariantType
+}
+
+type ProductVariantSpec {
+  id: ID!
+  productVariant: ProductVariant!
+  color: Variant
+  size: Variant
+}
+
+type ProductVariant {
+  id: ID!
+  product: Product!
+  colors: [Variant]!
+  sizes: [Variant]!
+  specs: ProductVariantSpec
+}
+
+type ProductOverviewText {
+  id: ID!
+  text: String
+  pairs: [String]!
+  product: Product!
+}
+
+type ProductOverviewImage {
+  id: ID!
+  label: String
+  image: String
+  product: Product!
+}
+
+type ProductOverview {
+  texts: [ProductOverviewText]
+  images: [ProductOverviewImage]
+}
+
+type ProductSpecDesc {
+  id: ID!
+  title: String
+  texts: [String]!
+  productSpec: ProductSpec!
+}
+
+type ProductSpec {
+  id: ID!
+  title: String!
+  badges: [String]!
+  productSpecDescs: [ProductSpecDesc]!
+  product: Product!
+}
+
+type Product {
+  id: ID!
+  name: String!
+  brand: String
+  category: Category
+  price: String!
+  unit: String
+  discount: Int
+  images: ProductImage
+  badges: [String]!
+  miscs: [String]!
+  variants: ProductVariant
+  stars: Stars
+  reviews: [Review]
+  overview: ProductOverview
+  specs: [ProductSpec]
+}
+
+type BannerImage {
+  id: ID!
+  banner: Banner!
+  image: String!
+  alt: String
+  url: String
+  css: String
+}
+
+type Banner {
+  id: ID!
+  marketing: String!
+  images: [BannerImage!]!
+}
+
+type TopPick {
+  id: ID!
+  name: String!
+  products: [Product!]!
+}
+
+type Stars {
+  id: ID!
+  product: Product!
+
+  one: Int
+  two: Int
+  three: Int
+  four: Int
+  five: Int
+}
+
+type Review {
+  id: ID!
+  createdAt: DateTime!
+  title: String
+  description: String
+  product: Product!
+  author: User
+  votes: Vote
+}
+
+type Vote {
+  id: ID!
+  positive: Int
+  negative: Int
+  review: Review
+}
+
+type Cart {
+  id: ID!
+  user: User!
+  product: Product!
+  qty: Int
+}

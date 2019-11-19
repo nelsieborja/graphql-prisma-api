@@ -1,0 +1,178 @@
+enum CategoryKey {
+  PHONES
+  ELECTRONICS
+  LAPTOPS
+  GROCERIES
+  FRESH_FOOD
+  FROZEN_FOOD
+  APPLIANCES
+  FURNITURE
+  HOUSEHOLD
+  OUTDOOR
+  BABY_WORLD
+  TOYS
+  BEAUTY
+  WATCHES
+}
+
+enum VariantType {
+  COLOR
+  SIZE
+}
+
+type User {
+  id: ID! @unique
+  email: String! @unique
+  password: String!
+  name: String!
+  reviews: [Review]! @relation(name: "ReviewAuthor", onDelete: CASCADE)
+}
+
+type Category {
+  id: ID! @unique
+  categoryKey: CategoryKey @unique
+  name: String!
+  subCategories: [String]!
+  products: [Product]! @relation(name: "ProductCategory", onDelete: SET_NULL)
+}
+
+type PopularCategory {
+  id: ID! @unique
+  category: Category
+  image: String
+}
+
+type ProductImage {
+  id: ID! @unique
+  product: Product! @relation(name: "ProductImages", onDelete: SET_NULL)
+  small: String
+  medium: String
+  large: [String]!
+}
+
+type Variant {
+  id: ID! @unique
+  name: String!
+  value: String!
+  type: VariantType
+}
+
+type ProductVariantSpec {
+  id: ID! @unique
+  productVariant: ProductVariant! @relation(name: "ProductVariantSpecs", onDelete: SET_NULL)
+  color: Variant @relation(name: "Color")
+  size: Variant @relation(name: "Size")
+}
+
+type ProductVariant {
+  id: ID! @unique
+  product: Product! @relation(name: "ProductVariants", onDelete: SET_NULL)
+  colors: [Variant]! @relation(name: "Colors")
+  sizes: [Variant]! @relation(name: "Sizes")
+  specs: ProductVariantSpec @relation(name: "ProductVariantSpecs", onDelete: CASCADE)
+}
+
+type ProductOverviewText {
+  id: ID! @unique
+  text: String
+  pairs: [String]!
+  product: Product! @relation(name: "ProductOverviewTexts", onDelete: SET_NULL)
+}
+
+type ProductOverviewImage {
+  id: ID! @unique
+  label: String
+  image: String
+  product: Product! @relation(name: "ProductOverviewImages", onDelete: SET_NULL)
+}
+
+type ProductSpecDesc {
+  id: ID! @unique
+  title: String
+  texts: [String]!
+  productSpec: ProductSpec! @relation(name: "ProductSpecDescs", onDelete: SET_NULL)
+}
+
+type ProductSpec {
+  id: ID! @unique
+  title: String!
+  badges: [String]!
+  productSpecDescs: [ProductSpecDesc]! @relation(name: "ProductSpecDescs", onDelete: CASCADE)
+  product: Product! @relation(name: "ProductSpecs", onDelete: SET_NULL)
+}
+
+type Product {
+  id: ID! @unique
+  name: String!
+  brand: String @default(value: "Carrefour")
+  category: Category @relation(name: "ProductCategory", onDelete: SET_NULL)
+  price: String!
+  unit: String
+  discount: Int
+  images: ProductImage @relation(name: "ProductImages", onDelete: CASCADE)
+  badges: [String]!
+  miscs: [String]!
+  variants: ProductVariant @relation(name: "ProductVariants", onDelete: CASCADE)
+  stars: Stars @relation(name: "ProductStars", onDelete: CASCADE)
+  reviews: [Review]
+  overviewTexts: [ProductOverviewText] @relation(name: "ProductOverviewTexts", onDelete: CASCADE)
+  overviewImages: [ProductOverviewImage] @relation(name: "ProductOverviewImages", onDelete: CASCADE)
+  specs: [ProductSpec] @relation(name: "ProductSpecs", onDelete: CASCADE)
+  searchString: String
+}
+
+type BannerImage {
+  id: ID! @unique
+  banner: Banner! @relation(name: "BannerImages", onDelete: CASCADE)
+  image: String!
+  alt: String
+  url: String
+  css: String
+}
+
+type Banner {
+  id: ID! @unique
+  marketing: String!
+  images: [BannerImage!]! @relation(name: "BannerImages", onDelete: SET_NULL)
+}
+
+type TopPick {
+  id: ID! @unique
+  name: String!
+  products: [Product!]!
+}
+
+type Stars {
+  id: ID! @unique
+  product: Product! @unique @relation(name: "ProductStars", onDelete: SET_NULL)
+
+  one: Int @default(value: 0)
+  two: Int @default(value: 0)
+  three: Int @default(value: 0)
+  four: Int @default(value: 0)
+  five: Int @default(value: 0)
+}
+
+type Review {
+  id: ID! @unique
+  createdAt: DateTime!
+  title: String
+  description: String
+  product: Product!
+  author: User @relation(name: "ReviewAuthor", onDelete: SET_NULL)
+  votes: Vote @relation(name: "ReviewVotes", onDelete: CASCADE)
+}
+
+type Vote {
+  id: ID! @unique
+  positive: Int @default(value: 0)
+  negative: Int @default(value: 0)
+  review: Review @relation(name: "ReviewVotes", onDelete: SET_NULL)
+}
+
+type Cart {
+  id: ID! @unique
+  user: User!
+  product: Product!
+  qty: Int
+}

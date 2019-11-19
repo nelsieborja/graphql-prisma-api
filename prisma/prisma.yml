@@ -1,0 +1,19 @@
+# The HTTP endpoint for your Prisma API
+#endpoint: ''
+endpoint: https://eu1.prisma.sh/nelsie/carrefour/dev
+
+# Points to the file that contains your datamodel
+datamodel: datamodel.prisma
+
+# Authentication
+secret: <APP_SECRET>
+
+# Specifies the language and directory for the generated Prisma client.
+generate:
+  - generator: javascript-client
+    output: ../src/generated/prisma-client
+
+# Ensures Prisma client is re-generated after a datamodel change.
+hooks:
+  post-deploy:
+    - prisma generate
