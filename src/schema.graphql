@@ -1,3 +1,5 @@
+# import Category from "./generated/prisma.graphql/prisma.graphql"
+
 enum CategoryKey {
   PHONES
   ELECTRONICS
@@ -23,9 +25,9 @@ enum VariantType {
 scalar DateTime
 
 type Query {
-  categories: [Category!]!
-  product(productID: String): Product!
-  products(filter: String, productID: String, categoryID: String): [Product!]!
+  categories(where: CategoryWhereInput, orderBy: CategoryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Category]!
+  product(productID: String): Product
+  products(where: ProductWhereInput, orderBy: ProductOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Product]!
   banners(marketing: String, skip: Int, first: Int): [Banner!]!
   topPicks(skip: Int, first: Int): [TopPick!]!
   popularCategories: [PopularCategory!]!
@@ -45,7 +47,12 @@ type Mutation {
     starKey: String
     starValue: Int
   ): ProductReview
-  voteReview(id: String, positive: Int!, negative: Int!, reviewID: String!): Vote
+  voteReview(
+    id: String
+    positive: Int!
+    negative: Int!
+    reviewID: String!
+  ): Vote
   # updateCart(id: String, productID: String, qty: Int!): Cart!
   updateCart(userID: String, productID: String!, qty: Int!): Cart
 }

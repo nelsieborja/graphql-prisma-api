@@ -21,97 +21,119 @@ enum VariantType {
 }
 
 type User {
-  id: ID! @unique
+  id: ID! @id
   email: String! @unique
   password: String!
   name: String!
   reviews: [Review]! @relation(name: "ReviewAuthor", onDelete: CASCADE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Category {
-  id: ID! @unique
+  id: ID! @id
   categoryKey: CategoryKey @unique
   name: String!
-  subCategories: [String]!
+  subCategories: [String]! @scalarList(strategy: RELATION)
   products: [Product]! @relation(name: "ProductCategory", onDelete: SET_NULL)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type PopularCategory {
-  id: ID! @unique
+  id: ID! @id
   category: Category
   image: String
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductImage {
-  id: ID! @unique
-  product: Product! @relation(name: "ProductImages", onDelete: SET_NULL)
+  id: ID! @id
+  product: Product! @relation(name: "ProductImages", onDelete: SET_NULL, link: INLINE)
   small: String
   medium: String
-  large: [String]!
+  large: [String]! @scalarList(strategy: RELATION)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Variant {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   value: String!
   type: VariantType
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductVariantSpec {
-  id: ID! @unique
-  productVariant: ProductVariant! @relation(name: "ProductVariantSpecs", onDelete: SET_NULL)
+  id: ID! @id
+  productVariant: ProductVariant! @relation(name: "ProductVariantSpecs", onDelete: SET_NULL, link: INLINE)
   color: Variant @relation(name: "Color")
   size: Variant @relation(name: "Size")
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductVariant {
-  id: ID! @unique
-  product: Product! @relation(name: "ProductVariants", onDelete: SET_NULL)
+  id: ID! @id
+  product: Product! @relation(name: "ProductVariants", onDelete: SET_NULL, link: INLINE)
   colors: [Variant]! @relation(name: "Colors")
   sizes: [Variant]! @relation(name: "Sizes")
   specs: ProductVariantSpec @relation(name: "ProductVariantSpecs", onDelete: CASCADE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductOverviewText {
-  id: ID! @unique
+  id: ID! @id
   text: String
-  pairs: [String]!
-  product: Product! @relation(name: "ProductOverviewTexts", onDelete: SET_NULL)
+  pairs: [String]! @scalarList(strategy: RELATION)
+  product: Product! @relation(name: "ProductOverviewTexts", onDelete: SET_NULL, link: INLINE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductOverviewImage {
-  id: ID! @unique
+  id: ID! @id
   label: String
   image: String
-  product: Product! @relation(name: "ProductOverviewImages", onDelete: SET_NULL)
+  product: Product! @relation(name: "ProductOverviewImages", onDelete: SET_NULL, link: INLINE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductSpecDesc {
-  id: ID! @unique
+  id: ID! @id
   title: String
-  texts: [String]!
-  productSpec: ProductSpec! @relation(name: "ProductSpecDescs", onDelete: SET_NULL)
+  texts: [String]! @scalarList(strategy: RELATION)
+  productSpec: ProductSpec! @relation(name: "ProductSpecDescs", onDelete: SET_NULL, link: INLINE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type ProductSpec {
-  id: ID! @unique
+  id: ID! @id
   title: String!
-  badges: [String]!
+  badges: [String]! @scalarList(strategy: RELATION)
   productSpecDescs: [ProductSpecDesc]! @relation(name: "ProductSpecDescs", onDelete: CASCADE)
   product: Product! @relation(name: "ProductSpecs", onDelete: SET_NULL)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Product {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   brand: String @default(value: "Carrefour")
-  category: Category @relation(name: "ProductCategory", onDelete: SET_NULL)
+  category: Category @relation(name: "ProductCategory", onDelete: SET_NULL, link: INLINE)
   price: String!
   unit: String
   discount: Int
   images: ProductImage @relation(name: "ProductImages", onDelete: CASCADE)
-  badges: [String]!
-  miscs: [String]!
+  badges: [String]! @scalarList(strategy: RELATION)
+  miscs: [String]! @scalarList(strategy: RELATION)
   variants: ProductVariant @relation(name: "ProductVariants", onDelete: CASCADE)
   stars: Stars @relation(name: "ProductStars", onDelete: CASCADE)
   reviews: [Review]
@@ -119,60 +141,75 @@ type Product {
   overviewImages: [ProductOverviewImage] @relation(name: "ProductOverviewImages", onDelete: CASCADE)
   specs: [ProductSpec] @relation(name: "ProductSpecs", onDelete: CASCADE)
   searchString: String
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type BannerImage {
-  id: ID! @unique
-  banner: Banner! @relation(name: "BannerImages", onDelete: CASCADE)
+  id: ID! @id
+  banner: Banner! @relation(name: "BannerImages", onDelete: CASCADE, link: INLINE)
   image: String!
   alt: String
   url: String
   css: String
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Banner {
-  id: ID! @unique
+  id: ID! @id
   marketing: String!
   images: [BannerImage!]! @relation(name: "BannerImages", onDelete: SET_NULL)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type TopPick {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   products: [Product!]!
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Stars {
-  id: ID! @unique
-  product: Product! @unique @relation(name: "ProductStars", onDelete: SET_NULL)
+  id: ID! @id
+  product: Product! @unique @relation(name: "ProductStars", onDelete: SET_NULL, link: INLINE)
 
   one: Int @default(value: 0)
   two: Int @default(value: 0)
   three: Int @default(value: 0)
   four: Int @default(value: 0)
   five: Int @default(value: 0)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Review {
-  id: ID! @unique
-  createdAt: DateTime!
+  id: ID! @id
   title: String
   description: String
   product: Product!
-  author: User @relation(name: "ReviewAuthor", onDelete: SET_NULL)
+  author: User @relation(name: "ReviewAuthor", onDelete: SET_NULL, link: INLINE)
   votes: Vote @relation(name: "ReviewVotes", onDelete: CASCADE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Vote {
-  id: ID! @unique
+  id: ID! @id
   positive: Int @default(value: 0)
   negative: Int @default(value: 0)
-  review: Review @relation(name: "ReviewVotes", onDelete: SET_NULL)
+  review: Review @relation(name: "ReviewVotes", onDelete: SET_NULL, link: INLINE)
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }
 
 type Cart {
-  id: ID! @unique
+  id: ID! @id
   user: User!
   product: Product!
   qty: Int
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
 }

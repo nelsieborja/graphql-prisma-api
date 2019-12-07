@@ -1,8 +1,8 @@
-const { updateCart } = require('./Mutation');
-const { getUserID } = require('../utils');
+const { updateCart } = require("./Mutation");
+const { getUserID } = require("../utils");
 
-async function categories(parent, args, context) {
-  return await context.prisma.categories();
+async function categories(parent, args, context, info) {
+  return await context.prisma.categories(args, info);
 }
 
 async function popularCategories(parent, args, context) {
@@ -15,40 +15,15 @@ async function product(parent, { productID }, context) {
   });
 }
 
-async function products(parent, { filter = '', productID = null, categoryID = null }, context) {
-  const andExpression = [];
-
-  if (productID) {
-    andExpression.push({ id: productID });
-  }
-
-  if (categoryID) {
-    andExpression.push({
-      category: {
-        id: categoryID
-      }
-    });
-  }
-
-  return await context.prisma.products({
-    where: {
-      AND: andExpression,
-      OR: [
-        { name_contains: filter },
-        { brand_contains: filter },
-        { price_contains: filter },
-        { searchString_contains: filter },
-        {
-          category: {
-            name_contains: filter
-          }
-        }
-      ]
-    }
-  });
+async function products(parent, args, context, info) {
+  return await context.prisma.products(args, info);
 }
 
-async function banners(parent, { marketing = null, skip = 0, first = null }, context) {
+async function banners(
+  parent,
+  { marketing = null, skip = 0, first = null },
+  context
+) {
   const params = { skip };
 
   if (first) {
